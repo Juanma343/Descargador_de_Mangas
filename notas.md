@@ -19,14 +19,15 @@ Para extraer la pagina web y obtener los links hay que hacer tres cosas
     res = requests.get(url, headers=recuest_headers)
     soup = BeautifulSoup(res.text, "html.parser")
 
-    tag = soup.find("div, "id="all")
+    tag = soup.find("div", id="all")
 
     #Uso en lista
     print(tag.contents[1]['data-scr'])
 
     #Como userlos en un vucle
     for child in tag.children:
-        print(child['data-scr'])
+        if isinstance(child, bs4.element.Tag):
+            print(child['data-src'].strip())
 
     ```
     Aqui usamos en el soup el metodo `find()` esta funcion, princimalmente, te busca en la etiquetas de html, de forma que si pones `find("div")` te dara el primer div que encuentre. Ademas de esto, se le puede dar un parametro mas para buscar por atributos, de forma que si queremos buscar una etiqueta **div** con el atributo **id = all** el ejmplo seria `find("div, "id="all")`.Que casualemente es justo la estructura que guarda los datos que necesitamos en esta pagina.
@@ -51,3 +52,30 @@ Para extraer la pagina web y obtener los links hay que hacer tres cosas
     Como podemos observar, los links que necesitamso estan dentro de esa estructura, y la manera mas comoda de estraerla es con el uso del `contents`. Si ponemos este metodo a un objeto soup, este tranforma las etiquetas del mismo nivel como elementos de una lista, por lo que se puede estraer cada etiqueta facilmente. Ademas de este esta el `children`, que es lo mismo pero para recorrer la lista entera.
 
     Por ultimo, lo que necesitmos es ectraer de la etiqueta imagen el atributo en concreto que es la imagen, y eso lo obtenemos usano unos [] y poniendo denteo el atributo necesario, en este caso, **data-scr**.
+
+    ---
+
+    En este caso, hemos aplicado lo anteriormente mencionado, pero nos encontramos con un probla, aveces, los elementos con el child no son del tipo tag, por que pueden ser solo /n por lo que da erro el codifo anterior, esto se aregla con el sigiente codifo, recordando importar la libreria **bs4**
+
+    ```
+    import requests
+    import bs4
+    from bs4 import BeautifulSoup
+
+    import descargar_imagen
+    import PDF_conversor
+
+    url = "https://www.anzmangashd.com/manga/tales-of-demons-and-gods/461/1"
+    recuest_headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+
+    res = requests.get(url, headers=recuest_headers)
+    soup = BeautifulSoup(res.text, "html.parser")
+
+    tag = soup.find("div", id="all")
+
+    #Como userlos en un vucle
+    for child in tag.children:
+        if isinstance(child, bs4.element.Tag):
+            print(child['data-src'].strip())
+    ```
+    La funcion isinstance comprueba que child sea del tipo bs4.element.Tag
