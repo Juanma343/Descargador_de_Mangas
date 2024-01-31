@@ -2,6 +2,8 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 
+import os
+
 import descargar_imagen
 import PDF_conversor
 
@@ -13,18 +15,27 @@ soup = BeautifulSoup(res.text, "html.parser")
 
 tag = soup.find("div", id="all")
 
-# for child in tag.children:
-#     print(child['data-scr'])
-#     descargar_imagen.descargar_imagen(child['data-scr'], "imagenes")
-#     print("Imagen descargada")
+# Crea una carpeta temporal para guardar las imagenes
+if not os.path.exists('./temp'):
+    os.mkdir('./temp')
 
-print('hola')
-print('hola')
-
-#Uso en lista
-print(tag.contents[1]['data-src'].strip())
-
-#Como userlos en un vucle
+# Extrae url de las imagenes
+imagenes = []
 for child in tag.children:
     if isinstance(child, bs4.element.Tag):
-        print(child['data-src'].strip())
+        imagenes.append(child['data-src'].strip())
+
+# Descarga las imagenes
+descargar_imagen.descargar_imagen(imagenes, "./temp")
+
+# Convierte las imagenes a PDF
+imagenes = [os.path.join("./temp", imagen) for imagen in os.listdir("./temp") if imagen.endswith(('.png', '.jpg', '.jpeg'))]
+PDF_conversor.convertir_imagenes_a_pdf(imagenes, "resultado.pdf")
+
+# Eliminar las imágenes después de convertirlas a PDF
+for imagen in imagenes:
+    os.remove(imagen)
+    print(f"Se ha eliminado la imagen: {imagen}")
+
+if os.path.exists('./temp'):
+    os.rmdir('./temp')

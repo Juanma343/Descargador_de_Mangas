@@ -1,29 +1,15 @@
 import os
-import requests
+import wget
 
-def descargar_imagen(url, carpeta_destino='.'):
-    try:
-        # Realizar la solicitud HTTP
-        respuesta = requests.get(url, stream=True)
-        respuesta.raise_for_status()
-
-        # Extraer el nombre del archivo de la URL
-        nombre_archivo = os.path.join(carpeta_destino, url.split("/")[-1])
-
-        # Guardar la imagen en el archivo local
-        with open(nombre_archivo, 'wb') as archivo:
-            for fragmento in respuesta.iter_content(chunk_size=8192):
-                archivo.write(fragmento)
-
-        print(f'Imagen descargada: {nombre_archivo}')
-    except requests.exceptions.RequestException as e:
-        print(f'Error al descargar la imagen: {e}')
+def descargar_imagen(imagenes, carpeta_destino='./'):
+    for imagen in imagenes:
+        print(carpeta_destino)      
+        wget.download(imagen, carpeta_destino)
 
 if __name__ == '__main__':
     # Ejemplo de uso
-    url_imagen = 'https://example.com/ejemplo_imagen.jpg'
-    carpeta_destino = 'carpeta_destino'
-
+    url_imagen = ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjDeiZQ42F4dpgpTNADE1viIetOwSJXEGrvId7tZ0Iob8rKxRTlraeFLUnP82tM70l1AGtAZs9cds1E5yo9U9vIWifn312egwyti-tZ-or1syc3WMM52R4GYmnBp7q1vUtGWIw4bPT3OlxpXuM7Y6CbtR2vomAMfSsqhIaSk3vEkSeTtug0AmII3vDun_FP/s1600']
+    carpeta_destino = r'./temp'
     # Crear la carpeta de destino si no existe
     if not os.path.exists(carpeta_destino):
         os.makedirs(carpeta_destino)

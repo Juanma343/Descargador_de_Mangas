@@ -1,37 +1,25 @@
-from reportlab.pdfgen import canvas
-from PIL import Image
+import os
+import img2pdf
 
-def convertir_a_pdf(rutas_imagenes, nombre_pdf="output.pdf"):
-    c = canvas.Canvas(nombre_pdf)
+def convertir_imagenes_a_pdf(imagenes, archivo_salida):
+    if not imagenes:
+        print("No se encontraron imágenes en la carpeta.")
+        return
 
-    for ruta_imagen in rutas_imagenes:
-        # Añadir una página para cada imagen
-        c.showPage()
+    imagenes.sort()  # Ordena las imágenes alfabéticamente
 
-        # Abrir la imagen y obtener sus dimensiones
-        imagen = Image.open(ruta_imagen)
-        ancho, alto = imagen.size
+    with open(archivo_salida, "wb") as pdf:
+        imagenes_pdf = []
+        for imagen in imagenes:
+            imagenes_pdf.append(imagen)
 
-        # # Ajustar el tamaño de la imagen para que se ajuste a la página (opcional)
-        # if ancho > alto:
-        #     imagen = imagen.resize((600, int(600 * alto / ancho)))
-        # else:
-        #     imagen = imagen.resize((int(600 * ancho / alto), 600))
+        pdf.write(img2pdf.convert(imagenes_pdf))
 
-        # Dibujar la imagen en el lienzo PDF
-        c.drawInlineImage(imagen, 0, 0)
+    print(f"Se ha creado el archivo PDF: {archivo_salida}")
 
-    # Guardar el PDF
-    c.save()
 
 if __name__ == "__main__":
-    # Lista de rutas de imágenes
-    rutas_imagenes = ["imagen1.jpg", "imagen2.png", "imagen3.jpeg"]
+    carpeta_entrada = "ruta/a/tu/carpeta"  # Reemplaza con la ruta de tu carpeta de imágenes
+    archivo_salida = "resultado.pdf"  # Nombre del archivo PDF resultante
 
-    # Nombre del archivo PDF de salida
-    nombre_pdf_salida = "output.pdf"
-
-    # Llamar a la función para convertir a PDF
-    convertir_a_pdf(rutas_imagenes, nombre_pdf_salida)
-
-    print(f"Se ha creado el archivo PDF: {nombre_pdf_salida}")
+    convertir_imagenes_a_pdf(carpeta_entrada, archivo_salida)
